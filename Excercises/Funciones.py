@@ -1,5 +1,9 @@
 numeros = []
 
+#Función con varios valores de retorno
+def get_volume(height=1,width=1,depth=1):
+    return height * width * depth, width, 'hola'
+
 def order():
     i = 0
 
@@ -36,6 +40,8 @@ def factorial():
         factorialResult *= i
 
     print("{}! = {}".format(number,factorialResult))
+    volume,width,text =get_volume(width=10)
+    print(volume)
 
 if __name__ =='__main__':
     order()
