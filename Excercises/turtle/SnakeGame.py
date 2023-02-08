@@ -2,6 +2,7 @@ import turtle
 from screeninfo import get_monitors
 import random
 import time
+from app import read_csv
 
 class Body:
 
@@ -28,7 +29,6 @@ class Snake(Body):
     def __init__(self):
         super().__init__()
         self.__body:list[Body] = []
-        #320,-310,665,-665
 
     @property
     def xcor(self):
@@ -117,6 +117,40 @@ class Food:
     def pos(self):
         return self.__turtle
 
+class Score:
+
+    def __init__(self):
+        self.__score = 0
+        self.__highe_score = 0
+        self.__text = turtle.Turtle()
+        self.__text.speed(0)
+        self.__text.color('black')
+        self.__text.penup()
+        self.__text.hideturtle()
+        self.__text.goto(0,260)
+        self.__read_higher()
+        self.__write_score()
+
+    @property
+    def score(self) -> int:
+        return self.__score
+
+    @score.setter
+    def score(self,value:int)->None:
+        self.__score = value
+        if self.__score > self.__highe_score:
+            self.__highe_score = self.__score
+            read_csv.write_txt('./Excercises/turtle/higher.txt',str(self.__highe_score),'w+')
+        self.__write_score()
+
+    def __read_higher(self) -> None:
+        higher = read_csv.read_txt('./Excercises/turtle/higher.txt')
+        self.__highe_score = int(higher)
+
+    def __write_score(self)->None:
+        self.__text.clear()
+        self.__text.write(f'Score: {self.__score}\tHigher score:{self.__highe_score}',align='center',font=('verdana',24,'normal'))
+
 class Game:
 
     def __init__(self):
@@ -126,6 +160,9 @@ class Game:
         self.__screen.setup(monitor.width,monitor.height)
         self.__screen.bgcolor("gray")
         self.__screen.title("Snake")
+        self.__score = Score()
+        self.__counter = 0
+        
 
     def play(self):
         t = Snake()
@@ -139,10 +176,14 @@ class Game:
             if t.xcor > w or t.xcor < -w or t.ycor > h or t.ycor < -h:
                 time.sleep(2)
                 t.clear()
+                self.__score.score = 0
 
             if t.distance(food.pos) < 20:
                 food.move()
                 t.feed()
+                self.__counter += 10
+                self.__score.score = self.__counter
+
 
             t.move()
 
